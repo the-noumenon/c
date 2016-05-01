@@ -60,7 +60,7 @@ class App extends React.Component<IApp, any> {
         
         this.setState({
             mql: mql,
-            layout: mql.matches ? LayoutType.Row : LayoutType.Column,
+            layout: mql.matches ? LayoutType.Column : LayoutType.Row,
             filter: DesignFilter.Favourite,
             designs: this._favourites,
             showTopScroller: false
