@@ -1,0 +1,8 @@
+{
+  "ambientDependencies": {
+    "react": "registry:dt/react#0.14.0+20160412154040",
+    "react-addons-transition-group": "registry:dt/react-addons-transition-group#0.14.0+20160417134118",
+    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
+    "velocity-animate": "registry:dt/velocity-animate#1.2.2+20160317120654"
+  }
+}
