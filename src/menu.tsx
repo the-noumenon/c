@@ -1,7 +1,6 @@
 import React = require('react');
 import ReactDOM = require('react-dom');
 
-
 import { VelocityComponent, VelocityTransitionGroup, velocityHelpers } from 'velocity-react';
 
 import { IMenu, DesignFilter, LayoutType } from "./models";

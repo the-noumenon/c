@@ -7,7 +7,7 @@
     ],
     "tasks": [
         {
-            "taskName": "release",
+            "taskName": "transpile",
             "showOutput": "silent",
             "isBuildCommand": true
         }

@@ -17,20 +17,12 @@ var envify = require("envify/custom");
 var uglify = require("gulp-uglify");
 
 // Stylesheet transpiling
-// TODO: Look at postCSS
 var less = require('gulp-less');
 var postcss = require('gulp-postcss');
 var nano = require('cssnano');
 var rename = require('gulp-rename');
 
-// gulp.task('copymodules', function() {
-//     gulp.src('./node_modules/react/dist/react.min.js')
-//         .pipe(gulp.dest('./public/scripts/node_modules/react/dist'))
-    
-//     gulp.src('./node_modules/react-dom/dist/react-dom.min.js')
-//         .pipe(gulp.dest('./public/scripts/node_modules/react-dom/dist'))
-// });
-
+// Use this task to just compile the typescript and react components
 gulp.task('tsc', function() {
     var result = gulp.src(['./src/**/*.ts', './src/**/*.tsx', './typings/main/**/*.ts', './typings/custom/*.ts'])    
         .pipe(sourcemaps.init())
@@ -47,26 +39,25 @@ gulp.task('tsc', function() {
         .pipe(gulp.dest('./public/scripts'))
 });
 
-// gulp.task('release', function() {
-//     var b = browserify('./public/scripts/c.dist.js');
-//     b.require('velocity-animate');
-//     b.require('velocity-animate/velocity.ui');
-//     b.require('react');
-//     b.require('react-dom');
-//     b.require('react-addons-transition-group');        
-//     b.require('velocity-react');    
-    
-//     b.transform(envify({
-//         NODE_ENV: 'production'
-//     }));
-    
-//     return b.bundle()     
-//         .pipe(source('./public/scripts/deps.js'))        
-//         .pipe(buffer())
-//         .pipe(uglify())
-//         .pipe(gulp.dest('./'))
-// });
 
+
+// Compile less files (css preprocessor)
+gulp.task('less', function() {
+    var processors = [nano];    
+    return gulp.src('./src/stylesheets/**/*.less')
+        .pipe(less())
+        .pipe(postcss(processors))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(gulp.dest('./public/stylesheets'))
+});
+
+// Clean all of our old js files
+gulp.task('clean', function() {    
+    return gulp.src(['./public/scripts/*.js', '!./public/scripts/deps.js'])
+        .pipe(clean());
+})
+
+// Use this task to copy dependencies as required (mostly for dev.) - use this in conjunction with transpile for speed of compiling
 gulp.task('js-deps', function() {
     var b = browserify();
     b.require('velocity-animate');
@@ -88,45 +79,7 @@ gulp.task('js-deps', function() {
         .pipe(gulp.dest('./'))
 });
 
-// gulp.task('bundle', function() {
-//     var bundledStream = through();
-    
-//     // Set up our bundled stream with the output that we want to achieve.
-//     bundledStream
-//         .pipe(source('./public/scripts/c.dist.js'))
-//         .pipe(buffer())
-//         .pipe(gulp.dest('./'));        
-    
-//     // Match files based on a pattern and pipe into our bundled stream.
-//     // We want all of our scripts except for the dependencies script to match.
-//     globby(['./public/scripts/*.js', '!./public/scripts/deps.js']).then(function(entries) {
-//         var b = browserify({ entries: entries });
-//         b.external('react');
-//         b.external('react-dom');
-//         b.external('jquery');
-            
-//         b.bundle().pipe(bundledStream);
-//     }).catch(function(err) {
-//         bundledStream.emit('error', err);
-//     });
-    
-//     return bundledStream;
-// });
-
-gulp.task('less', function() {
-    var processors = [nano];    
-    return gulp.src('./src/stylesheets/**/*.less')
-        .pipe(less())
-        .pipe(postcss(processors))
-        .pipe(rename({ suffix: '.min' }))
-        .pipe(gulp.dest('./public/stylesheets'))
-});
-
-gulp.task('clean', function() {    
-    return gulp.src(['./public/scripts/*.js', '!./public/scripts/deps.js'])
-        .pipe(clean());
-})
-
+// Use this task to transpile everything - except for dependencies, they're a bit big (~800kb, thanks react), so build 'js-deps' once, then use transpile for speed of compiling.
 gulp.task('transpile', ['clean', 'tsc', 'less'], function() {
     var bundledStream = through();
     
@@ -156,7 +109,8 @@ gulp.task('transpile', ['clean', 'tsc', 'less'], function() {
     return bundledStream;
 });
 
-gulp.task('release', function() {
+// Build our release files - if you don't mind compiling taking a couple of seconds, use this.
+gulp.task('release', ['clean', 'tsc', 'less'], function() {
     var bundledStream = through();
     
     // Set up our bundled stream with the output that we want to achieve.
@@ -190,6 +144,7 @@ gulp.task('release', function() {
     return bundledStream;
 });
 
+// Set up a watch so ou don't really have to use the 'transpile' task if you don't want.
 gulp.task('transpile-watch', function() {
     gulp.watch('./src/stylesheets/**/*.less', ['less']);
     gulp.watch(['./src/**/*.ts', './src/**/*.tsx'], ['tsc']);    
