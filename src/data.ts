@@ -435,5 +435,10 @@ export var designData: any[] = [
     {
         "id": 99,
         "label": "categories"
+    },
+    {
+        "id": 100,
+        "label": "dailyui landing page",
+        "favourite": true
     }
 ];
