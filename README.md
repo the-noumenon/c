@@ -16,8 +16,9 @@ it's the site i made as a **react** and velocity experiment which you can see he
 the site is set up as an express project, so you should be able to just:
 
 1. clone
-2. npm install
-3. typings install (to get all our typescript defs)
-4. run gulp tasks: 'js-deps' then 'transpile' or just 'release'
+2. express c
+3. npm install
+4. typings install (to get all our typescript defs)
+5. run gulp tasks: 'js-deps' then 'transpile' or just 'release'
 
 check it out - or just rip out any code/react components/css and just use them
